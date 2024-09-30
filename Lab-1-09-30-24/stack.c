@@ -48,6 +48,19 @@ int pop(int s[])
 int Top(int s[])
 {return isEmpty()?s[top]:0;}
 
+void display(int s[])
+{
+	if(!isEmpty())
+	{
+		printf("Elements are:\t");
+		for(int i=0;i<=top;i++)
+			printf("%d\t", s[i]);
+		printf("\n");
+	}
+	else
+		printf("No element to display\n");
+}
+
 void main()
 {
 	init();
@@ -55,8 +68,10 @@ void main()
 	char choice, c;
 	do{
 	printf("\n\nOperations:\n");
-	printf("push(p)\nPop(P)\nTop(t)\nEmpty(e)\nFull(f)\n0 to exit\nEnter choice:");
+	printf("push(p)\t\tPop(P)\nTop(t)\t\tDisplay(d)\nEmpty(e)\tFull(f)\n0 to exit\nEnter choice:");
+	// Flush stdin
 	while ((c = getchar()) != '\n' && c != EOF) { }
+	// TODO input here
 	scanf("%c",&choice);
 	switch(choice)
 	{
@@ -79,7 +94,10 @@ void main()
 			 else
 				printf("Stack is not full\n");
 			 break;
+		case 'd':display(s);
+			 break;
 		case '0': break;
+		default: break;
 	}
 	}while(choice!='0');
 	printf("\nExiting...\n");
