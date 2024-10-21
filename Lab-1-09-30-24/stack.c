@@ -46,7 +46,7 @@ int pop(int s[])
 }
 
 int Top(int s[])
-{return isEmpty()?s[top]:0;}
+{return s[top];}
 
 void display(int s[])
 {
