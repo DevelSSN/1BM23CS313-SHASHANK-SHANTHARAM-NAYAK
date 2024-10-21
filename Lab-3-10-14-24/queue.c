@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
-#define size 25
+#define size 5
 int front=-1, rear=-1;
 bool isEmpty(){return (front>rear)||(front==-1&&rear==-1);}
 bool isFull(){return rear==size-1;}
@@ -47,13 +47,12 @@ void main()
 {
 	int q[size];
 	char choice, c;
-	do{
 	printf("\n\nOperations:\n");
-	printf("Enqueue(p)\t\tDequeue(P)\t\tDisplay(d)\n0 to exit\nEnter choice:");
-	// Flush stdin
-	while ((c = getchar()) != '\n' && c != EOF) { }
-	// TODO input here
-	scanf("%c",&choice);
+	printf("Enqueue(p)\t\tDequeue(P)\t\tDisplay(d)\n0 to exit\n");
+	do{
+		// TODO input here
+		printf("\nEnter choice:");
+		scanf("%c",&choice);
 	switch(choice)
 	{
 		case 'p':int x;
@@ -78,8 +77,9 @@ void main()
 		case '0': break;
 		default: break;
 	}
+	// Flush stdin
+	if((c=getchar())=='\n'||c==EOF){}
 	}while(choice!='0');
 	printf("\nExiting...\n");
-
 }
 
