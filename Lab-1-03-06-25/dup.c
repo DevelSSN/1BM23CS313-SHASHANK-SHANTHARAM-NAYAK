@@ -17,10 +17,10 @@ int function(int* arr, int n)
 {
 	for(int i=0;i<n;i++)
 	{
-		for(int j=0;j<n;j++)
+		for(int j=i;j<n;j++)
 		{
 			if( i!=j &&arr[i]==arr[j])
-				printf("Duplicate pair(%d,%d)",i,j);
+				printf("Duplicate pair(%d,%d)\n",i,j);
 		}
 	}
 }
