@@ -57,7 +57,7 @@ void main()
 {
 	int c=0;
 	int n;
-	printf("Enter no. of processes:");
+	printf("Enter no. of p:");
 	scanf("%d",&n);
 
 	process p[n];
@@ -85,8 +85,12 @@ void main()
 		p[i].wt = p[i].tat - p[i].bt;
 	}
 
-	printf("|\tPID\t|\tAT\t|\tBT\t|\tCT\t|\tTAT\t|\tWT\t|\n");
-	printf("|\t---\t|\t---\t|\t---\t|\t---\t|\t---\t|\t---\t|\n");
-	for(int i=0;i<n;i++)
-		printf("|\t%d\t|\t%d\t|\t%d\t|\t%d\t|\t%d\t|\t%d\t|\n",p[i].pid,p[i].at,p[i].bt,p[i].ct,p[i].tat,p[i].wt);
+	double avgTAT=0, avgWT=0;
+	printf("pid | at | bt | ct | tat | wt\n");
+	for (int i = 0; i < n; i++) {
+		printf("%3d | %2d | %2d | %2d | %3d | %2d\n", p[i].pid, p[i].at,p[i].bt, p[i].ct, p[i].tat, p[i].wt);
+		avgTAT += p[i].tat;
+		avgWT += p[i].wt;
+	}
+	printf("ATAT:%f,AWT:%f\n",avgTAT/n,avgWT/n);
 }

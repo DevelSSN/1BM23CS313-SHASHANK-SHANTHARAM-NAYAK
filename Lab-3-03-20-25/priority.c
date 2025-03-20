@@ -5,6 +5,7 @@
 typedef struct process process;
 struct process{
 	int pid;
+	int pri;
 	int at;
 	int bt;
 	int ct;
@@ -13,7 +14,7 @@ struct process{
 	int btl;
 };
 
-void sjf(process* processes, int n) {
+void priority(process* processes, int n) {
     int currentTime = 0, completed = 0;
     bool isCompleted[n];  // Track completion of processes
     for (int i = 0; i < n; i++) {
@@ -23,13 +24,14 @@ void sjf(process* processes, int n) {
 
     while (completed < n) {
         int minRemainingbt = 9999;
+	int minPri = 9999;
         int idx = -1;
         bool processFound = false;
 
         // Find the process with the minimum remaining burst time
         for (int i = 0; i < n; i++) {
-            if (processes[i].at <= currentTime && !isCompleted[i] && processes[i].btl < minRemainingbt) {
-                minRemainingbt = processes[i].btl;
+            if (processes[i].at <= currentTime && !isCompleted[i] && processes[i].pri < minPri) {
+                minPri = processes[i].pri;
                 idx = i;
                 processFound = true;
             }
@@ -64,15 +66,15 @@ void main()
 	for(int i=0;i<n;i++)
 	{
 		printf("Enter data:");
-		scanf("%d%d%d",&processes[i].pid,&processes[i].at,&processes[i].bt);
+		scanf("%d%d%d%d",&processes[i].pid,&processes[i].pri,&processes[i].at,&processes[i].bt);
 	}
 
-	sjf(processes, n);
+	priority(processes, n);
 
 	double avgTAT=0, avgWT=0;
-	printf("pid | at | bt | ct | tat | wt\n");
+	printf("pid | at | bt | pri | ct | tat | wt\n");
 	for (int i = 0; i < n; i++) {
-		printf("%3d | %2d | %2d | %2d | %3d | %2d\n", processes[i].pid, processes[i].at,processes[i].bt, processes[i].ct, processes[i].tat, processes[i].wt);
+		printf("%3d | %2d | %2d | %3d | %2d | %3d | %2d\n", processes[i].pid, processes[i].at,processes[i].bt, processes[i].pri, processes[i].ct, processes[i].tat, processes[i].wt);
 		avgTAT += processes[i].tat;
 		avgWT += processes[i].wt;
 	}
