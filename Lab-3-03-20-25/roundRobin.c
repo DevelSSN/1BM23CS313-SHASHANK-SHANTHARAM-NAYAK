@@ -24,38 +24,23 @@ void robin(process* processes, int n)
 		isCompleted[i] = false;
 	}
 
-	int idx = -1;
-
-	process temp;
-	for(int i=0;i<n;i++)
-	{
-		for(int j=i;j<n;j++)
-		{
-			if(processes[j].at < processes[i].at)
-			{
-				temp = processes[i];
-				processes[i] = processes[j];
-				processes[j] = temp;
-			}
-		}
-	}
-
 
 	while(completed<n)
 	{
 		for(int i=0;i<n;i++)
 		{
-			if(processes[i].btl >= tq)
+			if(!isCompleted[i] && processes[i].btl-tq>0)
 			{
 				processes[i].btl -= tq;
 				ct += tq;
 			}
-			else
+			else if(!isCompleted[i])
 			{
 				ct += processes[i].btl;
 				processes[i].btl = 0;
 				processes[i].ct = ct;
 				completed++;
+				isCompleted[i]=true;
 			}
 		}
 	}
