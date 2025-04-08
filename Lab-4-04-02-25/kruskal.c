@@ -1,126 +1,89 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
-typedef struct edgelist edgelist;
-struct edgelist{
-	int s;
-	int d;
-	int w; //key
-};
 
-void swap(edgelist* a, edgelist* b)
-{
-	edgelist temp = *a;
-	*a = *b;
-	*b = temp;
+#define MAX 10
+#define INF 999
+
+typedef struct {
+    int u, v, weight;
+} Edge;
+
+int parent[MAX], rank[MAX];
+Edge edges[MAX * MAX];
+int n, m;
+
+void initSet() {
+    for (int i = 0; i < n; i++) {
+        parent[i] = i;
+        rank[i] = 0;
+    }
 }
 
-
-int partition(edgelist* arr, int low, int high)
-{
-	int i=low-1, j=low;
-	int x = arr[high].w;
-	for(;j < high;j++)
-	{
-		if(arr[j].w<x)
-		{
-			i++;
-			swap(&arr[j],&arr[i]);
-		}
-	}
-	i++;
-	swap(&arr[i],&arr[high]);
-	return i;
+int find(int i) {
+    if (i != parent[i]) {
+        parent[i] = find(parent[i]);
+    }
+    return parent[i];
 }
 
+void unionSet(int i, int j) {
+    int root1 = find(i);
+    int root2 = find(j);
 
-void quicksort(edgelist* arr, int low, int high)
-{
-	if(low >= high)
-		return;
-	int mid = partition(arr, low, high);
-	quicksort(arr, low, mid-1);
-	quicksort(arr, mid+1, high);
-}
-int root(int* parent, int i)
-{
-	while(parent[i]!=i)
-		i=parent[i];
-	return i;
-}
-int kruskal(int n, int adj[n][n], int m, int sel[m][2])
-{
-	int l=10;
-	edgelist* edges= (edgelist*) malloc(sizeof(edgelist)*l);
-	int sum = 0;
-	int parent[n];
-	for(int i =0;i<n;i++)
-		parent[i] = i;
-	int k=-1;
-	for(int i=0;i<n;i++)
-	{
-		for(int j=0; j<i;j++)
-		{
-			if(adj[i][j]>0)
-			{
-				k++;
-				if(k>=l)
-				{
-					l+=10;
-					edges = (edgelist*)realloc(edges, l);
-				}
-				edges[k].s=i;
-				edges[k].d=j;
-				edges[k].w=adj[i][j];
-			}
-		}
-	}
-
-	quicksort(edges, 0, k);
-
-	k=0;
-	for(int i=0;i<l;i++)
-	{
-		if(root(parent, edges[i].s) != root(parent, edges[i].d))
-		{
-			sel[k][0]=edges[i].s;
-			sel[k][1]=edges[i].d;
-			k++;
-			sum+=edges[i].w;
-			parent[edges[i].d] = edges[i].s;
-		}
-	}
-	return sum;
+    if (root1 != root2) {
+        if (rank[root1] > rank[root2]) {
+            parent[root2] = root1;
+        } else if (rank[root1] < rank[root2]) {
+            parent[root1] = root2;
+        } else {
+            parent[root2] = root1;
+            rank[root1]++;
+        }
+    }
 }
 
-	
-
-
-void main()
-{
-	int n;
-	int u,v,w;
-	printf("Enter no. of vertices:");
-	scanf("%d",&n);
-	int adj[n][n];
-	printf("Enter u,v,w(-1 to exit):");
-	while(true)
-	{
-		scanf("%d%d%d",&u,&v,&w);
-		if( (u!=-1||v!=-1) && u<n && v<n)
-		{
-			adj[u][v]=w;
-			adj[v][u]=w;
-		}
-		else
-		{
-			printf("Exiting entries:");
-			break;
-		}
-	}
-
-	int sel[n][2];
-
-	int sum = kruskal(n, adj, n, sel);
+int compare(const void *a, const void *b) {
+    return ((Edge *)a)->weight - ((Edge *)b)->weight;
 }
 
+void kruskal() {
+    int mstWeight = 0;
+    int edgeCount = 0;
+
+    qsort(edges, m, sizeof(Edge), compare);
+
+    for (int i = 0; i < m; i++) {
+        int u = edges[i].u;
+        int v = edges[i].v;
+        
+        if (find(u) != find(v)) {
+            printf("Edge (%d, %d) with weight %d\n", u, v, edges[i].weight);
+            unionSet(u, v);
+            mstWeight += edges[i].weight;
+            edgeCount++;
+
+            if (edgeCount == n - 1) {
+                break;
+            }
+        }
+    }
+
+    printf("\nTotal weight of MST: %d\n", mstWeight);
+}
+
+int main() {
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+    printf("Enter number of edges: ");
+    scanf("%d", &m);
+
+    printf("Enter the edges (u, v, weight):\n");
+    for (int i = 0; i < m; i++) {
+        scanf("%d %d %d", &edges[i].u, &edges[i].v, &edges[i].weight);
+    }
+
+    initSet();
+    kruskal();
+
+    return 0;
+}
