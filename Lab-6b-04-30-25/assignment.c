@@ -1,71 +1,100 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <limits.h>
 
-void naiveStringMatch(char* text, char* pattern) {
-    int n = strlen(text);       // Length of the text
-    int m = strlen(pattern);    // Length of the pattern
+void hungarian(int **cost, int n) {
+    int *u = (int *)calloc(n + 1, sizeof(int));
+    int *v = (int *)calloc(n + 1, sizeof(int));
+    int *p = (int *)calloc(n + 1, sizeof(int));
+    int *way = (int *)calloc(n + 1, sizeof(int));
 
-    // Traverse through every position in the text where the pattern could fit
-    for (int i = 0; i <= n - m; i++) {
-        int j;
-        
-        // Check if the pattern matches starting at text[i]
-        for (j = 0; j < m; j++) {
-            if (text[i + j] != pattern[j]) {
-                break;  // Mismatch found, break the inner loop
+    for (int i = 1; i <= n; ++i) {
+        p[0] = i;
+        int *minv = (int *)malloc((n + 1) * sizeof(int));
+        char *used = (char *)calloc(n + 1, sizeof(char));
+        for (int j = 0; j <= n; ++j) {
+            minv[j] = INT_MAX;
+        }
+
+        int j0 = 0;
+        do {
+            used[j0] = 1;
+            int i0 = p[j0], delta = INT_MAX, j1 = -1;
+            for (int j = 1; j <= n; ++j) {
+                if (!used[j]) {
+                    int cur = cost[i0 - 1][j - 1] - u[i0] - v[j];
+                    if (cur < minv[j]) {
+                        minv[j] = cur;
+                        way[j] = j0;
+                    }
+                    if (minv[j] < delta) {
+                        delta = minv[j];
+                        j1 = j;
+                    }
+                }
             }
-        }
+            for (int j = 0; j <= n; ++j) {
+                if (used[j]) {
+                    u[p[j]] += delta;
+                    v[j] -= delta;
+                } else {
+                    minv[j] -= delta;
+                }
+            }
+            j0 = j1;
+            free(used);
+        } while (p[j0] != 0);
 
-        // If the entire pattern matches, print the position
-        if (j == m) {
-            printf("Pattern found at index %d\n", i);
-        }
+        do {
+            int j1 = way[j0];
+            p[j0] = p[j1];
+            j0 = j1;
+        } while (j0);
+
+        free(minv);
     }
+
+    // Output result
+    printf("\nMinimum cost: %d\n", -v[0]);
+    printf("Assignments (Agent -> Task):\n");
+    for (int j = 1; j <= n; ++j) {
+        printf("Agent %d -> Task %d (Cost: %d)\n", p[j], j, cost[p[j] - 1][j - 1]);
+    }
+
+    // Cleanup
+    free(u);
+    free(v);
+    free(p);
+    free(way);
 }
 
 int main() {
-    char *text, *pattern;
-    int text_size, pattern_size;
+    int n;
+    printf("Enter the size of the square cost matrix (n): ");
+    scanf("%d", &n);
 
-    // Dynamically allocate memory for text and pattern
-    printf("Enter the size of the text: ");
-    scanf("%d", &text_size);
-    
-    // Allocate memory for the text
-    text = (char*)malloc((text_size + 1) * sizeof(char));  // +1 for null terminator
-    if (text == NULL) {
-        printf("Memory allocation for text failed!\n");
-        return 1;
+    // Allocate memory for the cost matrix
+    int **cost = (int **)malloc(n * sizeof(int *));
+    for (int i = 0; i < n; ++i) {
+        cost[i] = (int *)malloc(n * sizeof(int));
     }
 
-    // Take input for the text
-    printf("Enter the text: ");
-    getchar();  // Consume the newline left by previous scanf
-    fgets(text, text_size + 1, stdin);  // Read text including spaces
-
-    // Dynamically allocate memory for the pattern
-    printf("Enter the size of the pattern: ");
-    scanf("%d", &pattern_size);
-
-    pattern = (char*)malloc((pattern_size + 1) * sizeof(char));  // +1 for null terminator
-    if (pattern == NULL) {
-        printf("Memory allocation for pattern failed!\n");
-        free(text);
-        return 1;
+    // Input cost matrix
+    printf("Enter the cost matrix (%d x %d):\n", n, n);
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            scanf("%d", &cost[i][j]);
+        }
     }
 
-    // Take input for the pattern
-    printf("Enter the pattern: ");
-    getchar();  // Consume the newline left by previous scanf
-    fgets(pattern, pattern_size + 1, stdin);  // Read pattern including spaces
+    // Solve the assignment problem
+    hungarian(cost, n);
 
-    // Call the Naive String Matching function
-    naiveStringMatch(text, pattern);
-
-    // Free the dynamically allocated memory
-    free(text);
-    free(pattern);
+    // Free memory
+    for (int i = 0; i < n; ++i) {
+        free(cost[i]);
+    }
+    free(cost);
 
     return 0;
 }

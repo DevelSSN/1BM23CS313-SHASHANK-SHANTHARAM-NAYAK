@@ -34,10 +34,6 @@ int main() {
     
     // Allocate memory for the text
     text = (char*)malloc((text_size + 1) * sizeof(char));  // +1 for null terminator
-    if (text == NULL) {
-        printf("Memory allocation for text failed!\n");
-        return 1;
-    }
 
     // Take input for the text
     printf("Enter the text: ");
@@ -49,11 +45,6 @@ int main() {
     scanf("%d", &pattern_size);
 
     pattern = (char*)malloc((pattern_size + 1) * sizeof(char));  // +1 for null terminator
-    if (pattern == NULL) {
-        printf("Memory allocation for pattern failed!\n");
-        free(text);
-        return 1;
-    }
 
     // Take input for the pattern
     printf("Enter the pattern: ");
