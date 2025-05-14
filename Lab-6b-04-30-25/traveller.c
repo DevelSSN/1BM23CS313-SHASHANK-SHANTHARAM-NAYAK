@@ -47,7 +47,7 @@ int main() {
     printf("Enter the number of cities (n): ");
     scanf("%d", &n);
 
-    printf("Enter the distance matrix (dist[i][j]):\n");
+    printf("Enter the distance matrix:\n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             scanf("%d", &dist[i][j]);

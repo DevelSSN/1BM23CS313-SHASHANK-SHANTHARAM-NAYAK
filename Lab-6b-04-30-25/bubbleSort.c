@@ -25,11 +25,13 @@ void printArray(int arr[], int n) {
 }
 
 int main() {
-    int arr[] = {64, 34, 25, 12, 22, 11, 90};
-    int n = sizeof(arr) / sizeof(arr[0]);
-
-    printf("Unsorted array: ");
-    printArray(arr, n);
+	int n;
+	printf("Enter n:");
+	scanf("%d",&n);
+	int arr[n];
+	printf("Enter array:");
+	for(int i=0;i<n;i++)
+		scanf("%d",&arr[i]);
 
     bubbleSort(arr, n);
 

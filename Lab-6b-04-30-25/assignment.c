@@ -42,7 +42,6 @@ void hungarian(int **cost, int n) {
                 }
             }
             j0 = j1;
-            free(used);
         } while (p[j0] != 0);
 
         do {
@@ -51,8 +50,9 @@ void hungarian(int **cost, int n) {
             j0 = j1;
         } while (j0);
 
-        free(minv);
-    }
+		free(used);
+		free(minv);
+	}
 
     // Output result
     printf("\nMinimum cost: %d\n", -v[0]);
