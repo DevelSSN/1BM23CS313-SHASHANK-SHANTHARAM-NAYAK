@@ -10,8 +10,7 @@ struct part {
     part* next;
 };
 
-part* create()
-{
+part* create() {
     part* node = (part*)malloc(sizeof(part));
     node->size = 0;
     node->next = NULL;
@@ -19,8 +18,7 @@ part* create()
     return node;
 }
 
-void mempart(part* ptr, int pro, int size)
-{
+void mempart(part* ptr, int pro, int size) {
     part* npart = create();
     npart->size = ptr->size - size;
     npart->next = ptr->next;
@@ -29,12 +27,10 @@ void mempart(part* ptr, int pro, int size)
     ptr->next = npart;
 }
 
-void worst_fit(part* head, int pro, int size)
-{
+void worst_fit(part* head, int pro, int size) {
     part* temp = head;
     part* largest = NULL;
-    while (temp != NULL)
-    {
+    while (temp != NULL) {
         if (temp->pro == -1 && temp->size >= size) {
             if (largest == NULL || temp->size > largest->size)
                 largest = temp;
@@ -46,11 +42,9 @@ void worst_fit(part* head, int pro, int size)
     }
 }
 
-void first_fit(part* head, int pro, int size)
-{
+void first_fit(part* head, int pro, int size) {
     part* temp = head;
-    while (temp != NULL)
-    {
+    while (temp != NULL) {
         if (temp->pro == -1 && temp->size >= size) {
             mempart(temp, pro, size);
             break;
@@ -59,12 +53,10 @@ void first_fit(part* head, int pro, int size)
     }
 }
 
-void best_fit(part* head, int pro, int size)
-{
+void best_fit(part* head, int pro, int size) {
     part* temp = head;
     part* best = NULL;
-    while (temp != NULL)
-    {
+    while (temp != NULL) {
         if (temp->pro == -1 && temp->size >= size) {
             if (best == NULL || temp->size < best->size)
                 best = temp;
@@ -76,11 +68,9 @@ void best_fit(part* head, int pro, int size)
     }
 }
 
-void printPart(part* head)
-{
+void printPart(part* head) {
     part* temp = head;
-    while (temp != NULL)
-    {
+    while (temp != NULL) {
         if (temp->pro == -1) {
             printf("Empty:%d ", temp->size);
         } else {
@@ -91,8 +81,7 @@ void printPart(part* head)
     printf("\n");
 }
 
-part* clone(part* head)
-{
+part* clone(part* head) {
     if (head == NULL) {
         return NULL;
     }
@@ -115,34 +104,57 @@ part* clone(part* head)
     return newHead;
 }
 
-void random_allocate(part* head, int n, int p[])
-{
-    int allocated = rand() % (n + 1);  // Randomly allocate up to n processes
-    printf("Randomly allocating %d processes...\n", allocated);
-    for (int i = 0; i < allocated; i++) {
-        int process_id = rand() % n;  // Random process to allocate
-        int size = p[process_id];     // Size of the process
-        part* temp = head;
-        while (temp != NULL) {
-            if (temp->pro == -1 && temp->size >= size) {  // Find a free partition
-                mempart(temp, process_id, size);
-                printf("Allocated P%d of size %d\n", process_id, size);
-                break;
+// Random initial memory fragmentation and allocation
+void random_allocate(part* head, int n, int p[]) {
+    int total_size;
+    printf("Enter total memory size: ");
+    scanf("%d", &total_size);
+
+    int remaining = total_size;
+    head->size = 0; // Dummy head; will replace later
+    part* current = head;
+
+    printf("Randomly allocating initial memory...\n");
+
+    while (remaining > 0) {
+        int split_size = (rand() % (remaining / 2 + 1)) + 1;
+        if (split_size > remaining) split_size = remaining;
+
+        bool assign_process = rand() % 2 == 0;
+
+        part* node = create();
+        node->size = split_size;
+
+        if (assign_process && n > 0) {
+            int idx = rand() % n;
+            if (p[idx] <= split_size) {
+                node->pro = idx;
+                printf("Allocated P%d of size %d\n", idx, split_size);
+            } else {
+                node->pro = -1;
+                printf("Empty:%d\n", split_size);
             }
-            temp = temp->next;
+        } else {
+            node->pro = -1;
+            printf("Empty:%d\n", split_size);
         }
+
+        current->next = node;
+        current = node;
+        remaining -= split_size;
     }
+
+    // Remove dummy head and promote first real partition
+    part* realHead = head->next;
+    free(head);
+    *head = *realHead;
+    free(realHead);
 }
 
-void main()
-{
+int main() {
     srand(time(0));  // Seed for random number generation
 
     part* head = create();
-    int size;
-    printf("Enter Memory size:");
-    scanf("%d", &size);
-    head->size = size;
 
     int n;
     printf("Enter number of processes: ");
@@ -153,24 +165,21 @@ void main()
         scanf("%d", &p[i]);
     }
 
-    // Randomly allocate some processes before user input
-    random_allocate(head, n, p); 
+    // Generate random memory with some pre-allocated processes
+    random_allocate(head, n, p);
 
-    while (true)
-    {
-        // Clone the head after random allocation
+    while (true) {
         part* clonedHead = clone(head);
-        
+
         int choice;
-        printf("1.First Fit 2.Best Fit 3.Worst Fit 4.Exit: ");
+        printf("\n1.First Fit 2.Best Fit 3.Worst Fit 4.Exit: ");
         scanf("%d", &choice);
-        
+
         if (choice == 4) {
-            break; // Exit the loop
+            break;
         }
 
-        switch (choice)
-        {
+        switch (choice) {
             case 1:
                 for (int i = 0; i < n; i++) {
                     first_fit(clonedHead, i, p[i]);
@@ -191,6 +200,8 @@ void main()
                 continue;
         }
 
-        printPart(clonedHead);  // Print the partitions of the cloned list
+        printPart(clonedHead);
     }
+
+    return 0;
 }
