@@ -4,9 +4,9 @@ import random
 
 def init():
     global board
-    board = [[-1, -1, -1],
-             [-1, -1, -1],
-             [-1, -1, -1]]
+    board = [[' ', ' ', ' '],
+             [' ', ' ', ' '],
+             [' ', ' ', ' ']]
     global x
     x = input("Enter HUMAN player symbol (X or O): ")
     while x not in ['X', 'O']:
@@ -26,13 +26,9 @@ def display_board():
     print("\nCurrent Board:")
     for row in board:
         for cell in row:
-            if cell == 1:
-                print('X')
-            elif cell == 0:
-                print('O')
-            else:
-                print(' ')
-            print('|')
+            print(cell, end="")
+            print('|', end="")
+        print()
     print()
 
 
@@ -41,30 +37,26 @@ def valid_move(pos):
     if pos < 0 or pos > 8:
         return False
     row, col = pos // 3, pos % 3
-    return board[row][col] == -1
+    return board[row][col] == ' '
 
 
 def play(player, pos):
     """Make a move on the board."""
-    if player == 'X':
-        v = 1
-    else:
-        v = 0
     row, col = pos // 3, pos % 3
-    board[row][col] = v
+    board[row][col] = player
 
 
 def check_win():
     """Check if a player has won."""
     for row in range(3):
-        if board[row][0] == board[row][1] == board[row][2] != -1:
+        if board[row][0] == board[row][1] == board[row][2] != ' ':
             return True
     for col in range(3):
-        if board[0][col] == board[1][col] == board[2][col] != -1:
+        if board[0][col] == board[1][col] == board[2][col] != ' ':
             return True
-    if board[0][0] == board[1][1] == board[2][2] != -1:
+    if board[0][0] == board[1][1] == board[2][2] != ' ':
         return True
-    if board[0][2] == board[1][1] == board[2][0] != -1:
+    if board[0][2] == board[1][1] == board[2][0] != ' ':
         return True
     return False
 
@@ -72,7 +64,7 @@ def check_win():
 def is_draw():
     """Check if the game is a draw (board is full)."""
     for row in board:
-        if -1 in row:
+        if ' ' in row:
             return False
     return True
 
@@ -91,7 +83,8 @@ def game():
                 move = int(input("Enter position (0-8): "))
         else:
             print(f"Opponent's turn ({current_player})...")
-            # For simplicity, we use a random move for the AI (this can be expanded)
+            # For simplicity, we use a random move for the AI
+            # (this can be expanded)
             move = get_random_move()
             print(f"Opponent plays at position {move}")
 
