@@ -76,7 +76,7 @@ def solve_puzzle_dfs(start, x, y):
                 board_tuple = tuple(map(tuple, new_board))
                 if board_tuple not in visited:
                     visited.add(board_tuple)
-                    stack.push(PuzzleState(
+                    stack.append(PuzzleState(
                         new_board, new_x, new_y, curr.count + 1))
 
     print('No solution found (DFS Brute Force reached count limit)')
@@ -91,3 +91,4 @@ if __name__ == '__main__':
     print_board(start)
 
     solve_puzzle_dfs(start, x, y)
+    print("SHASHANK SHANTHARAM NAYAK - 1BM23CS313")

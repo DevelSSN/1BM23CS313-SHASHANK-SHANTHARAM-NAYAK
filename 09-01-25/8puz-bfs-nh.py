@@ -72,7 +72,6 @@ def solve_puzzle_bfs(start, x, y):
 
 
 if __name__ == '__main__':
-    print("SHASHANK SHANTHARAM NAYAK - 1BM23CS313")
     print("Enter initial state:")
     start = [[int(input()) for x in range(N)] for y in range(N)]
     x, y = int(input("Enter 0 pos:")), int(input())
@@ -82,3 +81,4 @@ if __name__ == '__main__':
 
     print("\nStart of Algorithm")
     print("Count:", solve_puzzle_bfs(start, x, y))
+    print("SHASHANK SHANTHARAM NAYAK - 1BM23CS313")
