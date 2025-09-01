@@ -59,6 +59,7 @@ def isClean():
     return True
 
 
+print("SHASHANK SHANTHARAM NAYAK - 1BM23CS313")
 init()
 count = 0
 while not isClean():
