@@ -1,0 +1,118 @@
+@startuml
+class Window{
+x1
+y1
+x2
+y2
+display()
+undisplay()
+raise()
+lower()
+}
+
+class ScrollingWindow{
+xOffSet
+yOffSet
+scroll()
+}
+
+class Canvas{
+cx1
+cy1
+cx2
+cy2
+addElement()
+deleteElement()
+}
+
+class Panel{
+}
+
+class TextWindow{
+string
+insert()
+delete()
+}
+
+class ScrollingCanvas{}
+
+class Shape{
+color
+lineWidth
+}
+
+class Line{
+x1
+y1
+x2
+y2
+}
+class ClosedShape{
+fillColor
+fillPattern
+}
+class Polygon{
+draw()
+}
+class Ellipse{
+x
+y
+a
+b
+draw()
+}
+
+class Point{
+x
+y
+}
+class PanelItem{
+x
+y
+label
+}
+class Event{
+action
+}
+class Button{
+string
+depressed
+}
+class ChoiceItem{
+}
+class ChoiceEntry{
+string
+value
+}
+class TextItem{
+maxLength
+currentString
+}
+
+
+Window <|-- ScrollingWindow
+ScrollingWindow <|-- TextWindow
+ScrollingWindow <|-- ScrollingCanvas
+
+Window <|-- Canvas
+Canvas <|-- ScrollingCanvas
+Canvas "\t1\n window"  -- "elements *" Shape
+
+Shape <|-- Line
+Shape <|-- ClosedShape
+ClosedShape <|-- Polygon
+ClosedShape <|-- Ellipse
+
+Polygon "1" -- "vertices\t*\n{ordered}" Point
+
+Window <|-- Panel
+
+Panel [itemName] "\n1" -- "0..1" PanelItem
+PanelItem <|-- ChoiceItem
+PanelItem <|-- Button
+PanelItem <|-- TextItem
+ChoiceItem "0..1" -- "choiceEntry 1" ChoiceEntry
+ChoiceItem "1" -- "choices\n*" ChoiceEntry
+PanelItem "\t*" -- "notifyEvent\n\t\t1" Event
+Event "1\nkeyboardEvent" -- "\t\t\t*" TextItem
+@enduml
