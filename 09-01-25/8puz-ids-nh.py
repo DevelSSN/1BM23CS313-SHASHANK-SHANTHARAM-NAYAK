@@ -23,12 +23,17 @@ def print_board(board):
         print(' '.join(map(str, board[i * N:(i + 1) * N])))
     print('--------')
 
+# Depth-limited DFS
 
-def solve_puzzle_dfs(start, x, y, count, visited):
-    if is_goal_state(start):
-        print(f'Goal state reached at depth {count}')
+
+def dfs_depth_limit(start, x, y, depth, limit, visited):
+    if depth > limit:  # Depth limit exceeded, return None
+        return None
+
+    if is_goal_state(start):  # Goal reached
+        print(f'Goal state reached at depth {depth}')
         print_board(start)
-        return count
+        return depth
 
     # Explore all possible moves
     for i in range(4):
@@ -49,14 +54,30 @@ def solve_puzzle_dfs(start, x, y, count, visited):
             if new_board_tuple not in visited:
                 visited.add(new_board_tuple)
 
-                # Recursively search the next state
-                result = solve_puzzle_dfs(
-                    new_board_tuple, nx, ny, count + 1, visited)
+                # Recursively search the next state with increased depth
+                result = dfs_depth_limit(
+                    new_board_tuple, nx, ny, depth + 1, limit, visited)
                 if result is not None:  # If the goal state is found, propagate the result back
                     return result
 
-    print("Recurse back")
     return None
+
+# Iterative Deepening Search
+
+
+def iterative_deepening_search(start):
+    # Find the position of 0 (empty space)
+    x, y = start.index(0) // N, start.index(0) % N
+    visited = set()
+    visited.add(start)
+
+    depth = 0
+    while True:
+        print(f"Searching with depth limit {depth}")
+        result = dfs_depth_limit(start, x, y, 0, depth, visited)
+        if result is not None:
+            return result
+        depth += 1  # Increase the depth limit
 
 
 if __name__ == '__main__':
@@ -72,20 +93,13 @@ if __name__ == '__main__':
     # Convert start list to a tuple
     start_tuple = tuple(start)
 
-    # Find position of 0 (empty space)
-    x, y = int(input("Enter x position of 0: ")), int(
-        input("Enter y position of 0: "))
-
     print('Initial State:')
     print_board(start_tuple)
 
-    # Set of visited states to avoid revisiting the same state
-    visited = set()
-    visited.add(start_tuple)
-
+    # Run Iterative Deepening Search
     print("\nStart of Algorithm")
-    result = solve_puzzle_dfs(start_tuple, x, y, 0, visited)
+    result = iterative_deepening_search(start_tuple)
     if result is not None:
-        print(f"Solution found with depth {result}")
+        print(f"Solution found at depth {result}")
     else:
         print("No solution found")
