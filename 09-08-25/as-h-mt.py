@@ -9,9 +9,8 @@ goal_state = (1, 2, 3, 8, 0, 4, 7, 6, 5)  # The solved puzzle
 def misplaced_tiles(state):
     distance = 0
     for i in range(9):
-    : qa
-    if (state[i] != goal_state[i]):
-        distance += 1
+        if (state[i] != goal_state[i]):
+            distance += 1
     return distance
 
 # Generate possible moves (valid states from the current state)
