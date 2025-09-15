@@ -18,43 +18,39 @@ def compute_conflicts(board):
 
 def get_random_neighbor(board):
     n = len(board)
-    neighbor = list(board)
-    col = random.randint(0, n - 1)
-    new_row = random.randint(0, n - 1)
-    while new_row == neighbor[col]:
-        new_row = random.randint(0, n - 1)
-    neighbor[col] = new_row
-    return neighbor
+    dmap = dict()
+    for col in range(n):
+        for row in range(n):
+            if board[col] != row:
+                neighbor = list(board)
+                neighbor[col] = row
+                dmap.setdefault(tuple(neighbor), compute_conflicts(neighbor))
+    return dmap
 
 
-def simulated_annealing(n, initial_temp=100.0, cooling_rate=0.99, min_temp=0.01, max_steps=100000):
+def simulated_annealing(n, T=100.0, cool_rate=0.99, min_temp=0.01, max_steps=100000):
     current = generate_board(n)
-    current_conflicts = compute_conflicts(current)
-    T = initial_temp
-    steps = 0
+    current_cost = compute_conflicts(current)
+    step = 0
+    while T > min_temp and step < max_steps:
+        neighbors = get_random_neighbor(current)
+        best_neighbor = min(neighbors, key=neighbors.get)
+        print_board(best_neighbor)
+        best_cost = neighbors[best_neighbor]
 
-    while T > min_temp and steps < max_steps:
-        if current_conflicts == 0:
-            print(f"Solved in {steps} steps.")
-            return current
+        cost_diff = current_cost - best_cost
 
-        neighbor = get_random_neighbor(current)
-        neighbor_conflicts = compute_conflicts(neighbor)
-        delta = neighbor_conflicts - current_conflicts
+        if cost_diff > 0 or random.random() < math.exp(cost_diff / T):
+            current = list(best_neighbor)
+            current_cost = best_cost
 
-        if delta < 0 or random.random() < math.exp(-delta / T):
-            current = neighbor
-            current_conflicts = neighbor_conflicts
+        T *= cool_rate
+        step += 1
 
-        T *= cooling_rate
-        steps += 1
+        if current_cost == 0:
+            return current, step
 
-    if current_conflicts == 0:
-        print(f"Solved in {steps} steps.")
-        return current
-    else:
-        print("Failed to find solution.")
-        return None
+    return None, None
 
 
 def print_board(board):
@@ -64,9 +60,11 @@ def print_board(board):
     print()
 
 
-# Example usage
-n = 8
-solution = simulated_annealing(n)
+n = 4
+solution, cost = simulated_annealing(n)
+
 if solution:
-    print("Solution found:")
+    print(f"Solution found:{cost}")
     print_board(solution)
+else:
+    print("No solution found.")
