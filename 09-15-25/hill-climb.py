@@ -32,6 +32,8 @@ def get_neighbors(board):
 def hill_climbing(n, max_restarts=1000):
     for restart in range(max_restarts):
         board = generate_board(n)
+        print("New State")
+        print_board(board)
         steps = 0
         while True:
             current_conflicts = compute_conflicts(board)
@@ -40,9 +42,11 @@ def hill_climbing(n, max_restarts=1000):
                 return board
             neighbors = get_neighbors(board)
             next_board = min(neighbors, key=compute_conflicts)
+            print("Next Neighbour")
+            print_board(next_board)
             next_conflicts = compute_conflicts(next_board)
             if next_conflicts >= current_conflicts:
-                # Local minimum; restart
+                print("Restarting due to non-optimality")
                 break
             board = next_board
             steps += 1
@@ -60,7 +64,7 @@ def print_board(board):
 
 
 # Example usage:
-n = 8
+n = 4
 solution = hill_climbing(n)
 if solution:
     print("Solution found:")
