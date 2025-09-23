@@ -5308,6 +5308,20 @@
 							"enumerationLiteralCompartment": {
 								"$ref": "AAAAAAGZdVACvzBsSfg="
 							}
+						},
+						{
+							"_type": "UMLTextView",
+							"_id": "AAAAAAGZdaZVOmKczrM=",
+							"_parent": {
+								"$ref": "AAAAAAFF+qBtyKM79qY="
+							},
+							"font": "Arial;13;0",
+							"parentStyle": false,
+							"left": 88,
+							"top": 24,
+							"width": 408,
+							"height": 64,
+							"text": "SHASHANK SHANTHARAM NAYAK - 1BM23CS313"
 						}
 					]
 				},

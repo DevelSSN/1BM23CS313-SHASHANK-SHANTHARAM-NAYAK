@@ -4360,6 +4360,20 @@
 							"enumerationLiteralCompartment": {
 								"$ref": "AAAAAAGZdI/JqM3Tc9w="
 							}
+						},
+						{
+							"_type": "UMLTextView",
+							"_id": "AAAAAAGZdadKJfetAf8=",
+							"_parent": {
+								"$ref": "AAAAAAFF+qBtyKM79qY="
+							},
+							"font": "Arial;13;0",
+							"parentStyle": false,
+							"left": 56,
+							"top": 24,
+							"width": 408,
+							"height": 64,
+							"text": "SHASHANK SHANTHARAM NAYAK - 1BM23CS313"
 						}
 					]
 				},
@@ -4512,7 +4526,8 @@
 										"_parent": {
 											"$ref": "AAAAAAGZdIkxfZeay4I="
 										},
-										"name": "itemId"
+										"name": "itemId",
+										"type": ""
 									}
 								]
 							},
