@@ -157,5 +157,6 @@ KB = Formula('IFF',
 
 alpha = Formula('IMPLIES', A, C)
 
+print("1BM23CS313-SHASHANK SHANTHARAM NAYAK")
 result = entails(KB, alpha)
 print(f"\nDoes KB entail alpha? {result}")

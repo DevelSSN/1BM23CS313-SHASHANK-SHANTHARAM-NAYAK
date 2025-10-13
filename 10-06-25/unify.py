@@ -53,9 +53,12 @@ def unify(t1, t2, subst=None):
         raise Exception(f"Cannot unify {t1} and {t2}")
 
 
-term1 = ('f', ['x', ('g', ['y'])])
-term2 = ('f', ['A', ('g', ['B'])])
+# term1 = ('f', ['x', ('g', ['y'])]) # f(x,g(y))
+# term2 = ('f', ['A', ('g', ['B'])]) # f(A,g(B))
 
+term1 = ('p',['b','x',('f',[('g',['z'])])])
+term2 = ('p',['z',('f',['y']),('f',['y'])])
+print("1BM23CS313-SHASHANK SHANTHARAM NAYAK")
 try:
     result = unify(term1, term2)
     print("Unifier:", result)
