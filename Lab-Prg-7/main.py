@@ -1,83 +1,63 @@
-import re
-from collections import defaultdict
+def is_variable(term):
+    return isinstance(term, str) and term[0].islower()
 
 
-def parse_statement(statement):
-    """Parses a statement like 'John knows X' into ('John', 'X')"""
-    match = re.match(r'(\w+)\s+knows\s+(\w+)', statement)
-    if match:
-        return match.group(1), match.group(2)
-    return None, None
-
-
-def build_knowledge_base(statements):
-    """Builds a list of (subject, object) tuples from statements"""
-    return [parse_statement(stmt) for stmt in statements]
-
-
-
-def infer_variable_values(kb):
-    knows_map = defaultdict(set)
-    known_by = defaultdict(set)
-    variables = set()
-    constants = set()
-
-    # Build maps and track variables/constants
-    for subj, obj in kb:
-        if subj is None or obj is None:
-            continue
-        knows_map[subj].add(obj)
-        known_by[obj].add(subj)
-        if obj.isupper():  # variables
-            variables.add(obj)
+def occurs_check(var, term, subst):
+    if var == term:
+        return True
+    elif is_variable(term):
+        if term in subst:
+            return occurs_check(var, subst[term], subst)
         else:
-            constants.add(obj)
-        if subj.isupper():
-            variables.add(subj)
-        else:
-            constants.add(subj)
-
-    inferred = {}
-
-    # Inference 1: From subject to object (e.g., John knows Clara, John knows X => X = Clara)
-    for var in variables:
-        for person, known_people in knows_map.items():
-            if var in known_people:
-                for kp in known_people:
-                    if kp != var and kp in constants:
-                        inferred[var] = kp
-            if person == var:
-                for kp in known_people:
-                    if kp in constants:
-                        inferred[var] = kp
-
-    # Inference 2: From object to subject (e.g., Clara knows Y, John knows Clara => Y = John)
-    for var in variables:
-        for subj, known in knows_map.items():
-            if var in known:
-                continue  # already handled
-        for person, known_people in knows_map.items():
-            for kp in known_people:
-                # If kp knows var, and var is a subject in someone else's statement
-                if kp in knows_map and var in knows_map[kp]:
-                    for p in known_by[kp]:
-                        if p in constants:
-                            inferred[var] = p
-
-    return inferred
+            return False
+    elif isinstance(term, tuple):
+        return any(occurs_check(var, arg, subst) for arg in term[1])
+    else:
+        return False
 
 
-# Example usage
-statements = [
-    "John knows X",
-    "Clara knows Y",
-    "John knows Clara"
-]
+def substitute(term, subst):
+    if is_variable(term):
+        while term in subst:
+            term = subst[term]
+        return term
+    elif isinstance(term, tuple):
+        return (term[0], [substitute(arg, subst) for arg in term[1]])
+    else:
+        return term
 
-# Parse and infer
-kb = build_knowledge_base(statements)
-inferred_values = infer_variable_values(kb)
 
-# Display inferred values
-for var, val in inferred_values.items():
-    print(f"{var} is {val}")
+def unify(t1, t2, subst=None):
+    if subst is None:
+        subst = {}
+
+    t1 = substitute(t1, subst)
+    t2 = substitute(t2, subst)
+
+    if t1 == t2:
+        return subst
+    elif is_variable(t1):
+        if occurs_check(t1, t2, subst):
+            raise Exception(f"Occurs check failed: {t1} in {t2}")
+        subst[t1] = t2
+        return subst
+    elif is_variable(t2):
+        return unify(t2, t1, subst)
+    elif isinstance(t1, tuple) and isinstance(t2, tuple):
+        if t1[0] != t2[0] or len(t1[1]) != len(t2[1]):
+            raise Exception(f"Function mismatch: {t1} vs {t2}")
+        for arg1, arg2 in zip(t1[1], t2[1]):
+            subst = unify(arg1, arg2, subst)
+        return subst
+    else:
+        raise Exception(f"Cannot unify {t1} and {t2}")
+
+
+term1 = ('f', ['x', ('g', ['y'])])
+term2 = ('f', ['A', ('g', ['B'])])
+
+try:
+    result = unify(term1, term2)
+    print("Unifier:", result)
+except Exception as e:
+    print("Unification failed:", e)
