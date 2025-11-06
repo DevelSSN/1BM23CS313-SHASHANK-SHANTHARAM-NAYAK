@@ -158,3 +158,4 @@ if __name__ == "__main__":
 
     result = fol_resolution(kb, query)
     print("\nResult:", "Proven" if result else "Not Proven")
+    print("SHASHANK SHANTHARAM NAYAK-1BM23CS313")

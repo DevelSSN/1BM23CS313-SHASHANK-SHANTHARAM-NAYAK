@@ -2,11 +2,13 @@
 N = 3
 
 # Possible moves: Left, Right, Up, Down
-row = [0, 0, -1, 1]
-col = [-1, 1, 0, 0]
+dx = [0, 0, -1, 1]
+dy = [-1, 1, 0, 0]
 
 # Goal state definition
-goal = (1, 2, 3, 8, 0, 4, 7, 6, 5)  # Represent the goal state as a tuple
+goal = (1, 2, 3,
+        8, 0, 4,
+        7, 6, 5)
 
 
 def is_goal_state(board):
@@ -18,79 +20,67 @@ def is_valid(x, y):
 
 
 def print_board(board):
-    # Convert tuple back to 2D list format for printing
     for i in range(N):
         print(' '.join(map(str, board[i * N:(i + 1) * N])))
     print('--------')
 
-# Depth-limited DFS
-
 
 def dfs_depth_limit(start, x, y, depth, limit, visited):
-    if depth > limit:  # Depth limit exceeded, return None
+    if depth > limit:
         return None
 
-    if is_goal_state(start):  # Goal reached
+    if is_goal_state(start):
         print(f'Goal state reached at depth {depth}')
         print_board(start)
         return depth
 
     # Explore all possible moves
     for i in range(4):
-        nx = x + row[i]
-        ny = y + col[i]
+        nx, ny = x + dx[i], y + dy[i]
 
         if is_valid(nx, ny):
-            # Convert current 2D coordinates (x, y) to 1D index
             current_index = x * N + y
             next_index = nx * N + ny
 
-            # Create a new board configuration by swapping positions
+            # Swap to create a new configuration
             new_board = list(start)
             new_board[current_index], new_board[next_index] = new_board[next_index], new_board[current_index]
             new_board_tuple = tuple(new_board)
 
-            # If this state has not been visited before, push it to the visited set and recurse
             if new_board_tuple not in visited:
                 visited.add(new_board_tuple)
-
-                # Recursively search the next state with increased depth
                 result = dfs_depth_limit(
                     new_board_tuple, nx, ny, depth + 1, limit, visited)
-                if result is not None:  # If the goal state is found, propagate the result back
+                if result is not None:
                     return result
-
+                # No need to remove from visited — each depth search is isolated
     return None
-
-# Iterative Deepening Search
 
 
 def iterative_deepening_search(start):
-    # Find the position of 0 (empty space)
     x, y = start.index(0) // N, start.index(0) % N
-    visited = set()
-    visited.add(start)
-
     depth = 0
+
     while True:
         print(f"Searching with depth limit {depth}")
+        visited = set()  # Reset visited for each depth limit
+        visited.add(start)
         result = dfs_depth_limit(start, x, y, 0, depth, visited)
         if result is not None:
             return result
-        depth += 1  # Increase the depth limit
+        depth += 1
 
 
 if __name__ == '__main__':
     print("SHASHANK SHANTHARAM NAYAK - 1BM23CS313")
     print("Enter initial state:")
 
-    # Input initial state from user or hardcode the start
+    # Input initial state from user
     start = []
     for i in range(N):
-        row = list(map(int, input(f"Enter row {i + 1}: ").split()))
-        start.extend(row)  # Append row elements to the start list
+        row_input = list(map(int, input(f"Enter row {i + 1}: ").split()))
+        start.extend(row_input)
 
-    # Convert start list to a tuple
     start_tuple = tuple(start)
 
     print('Initial State:')
