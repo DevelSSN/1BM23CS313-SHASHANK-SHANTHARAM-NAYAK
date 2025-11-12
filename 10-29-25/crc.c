@@ -1,57 +1,76 @@
 #include <stdio.h>
 #include <string.h>
-#define N strlen(poly)
 
-char data[30];
-char check_value[30];
-char poly[30];
-int dlen, i, j;
+#define MAX_MESSAGE_SIZE 1024
+#define MAX_POLY_SIZE 33
 
-void XOR(){
-  for(j=1;j<N;j++){
-    check_value[j]=check_value[j]==poly[j]?'0':'1';
-  }
-}
-
-void crc(){
-  for(i=0;i<N;i++){
-    check_value[i]=data[i];
-  }
-  do{
-    if(check_value[0]=='1'){
-     XOR();
+void xor_with_polynomial(char *data, const char *polynomial, int poly_len) {
+    for (int i = 0; i < poly_len; i++) {
+        data[i] = (data[i] == polynomial[i]) ? '0' : '1';
     }
-    for (j=0; j<N-1; j++) {
-      check_value[j]=check_value[j+1];
+}
+
+void crc_calculate(char *message, char *polynomial, int message_len, int poly_len, char *result) {
+    char crc[message_len + poly_len - 1];
+    memset(crc, '0', sizeof(crc));
+    strncpy(crc, message, message_len);
+
+    for (int i = 0; i < message_len; i++) {
+        if (crc[i] == '1') {
+            xor_with_polynomial(&crc[i], polynomial, poly_len);
+        }
     }
-    check_value[j]=data[i++];
-  }while(i<=dlen+N+1);
+
+    strncpy(result, &crc[message_len], poly_len - 1);
+    result[poly_len - 1] = '\0';
 }
 
-void receiver(){
-  printf("Enter string:");
-  scanf("%s",data);
-  crc();
-  for(i=0;i<N-1&&check_value[i]!='1';i++);
-  if(i<N-1)
-    printf("Error detected\n");
-  else
-    printf("No Error detected\n");
+void append_crc(char *message, char *polynomial, int message_len, int poly_len) {
+    char crc[poly_len];
+    crc_calculate(message, polynomial, message_len, poly_len, crc);
+    strcat(message, crc);
 }
 
-int main(){
-  printf("Enter data:");
-  scanf("%s",   data);
-  printf("Enter poly:");
-  scanf("%s",   poly);
-  dlen = strlen(data);
-  for(i=dlen;i<dlen+N-1;i++)
-    data[i]='0';
-  crc();
-  printf("CRC:%s\n",check_value);
-  for(i=dlen;i<dlen+N-1;i++)
-    data[i]=check_value[i-dlen];
-  printf("To Receive data:%s\n",data);
-  receiver();
-  return 0;
+int check_crc(char *message, char *polynomial, int poly_len) {
+    int message_len = strlen(message) - poly_len + 1;
+    char crc[poly_len];
+    crc_calculate(message, polynomial, message_len, poly_len, crc);
+
+    for (int i = 0; i < poly_len - 1; i++) {
+        if (crc[i] != '0') {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+int main() {
+    char message[MAX_MESSAGE_SIZE];
+    char polynomial[MAX_POLY_SIZE];
+
+    printf("Enter the message (binary string): ");
+    fgets(message, MAX_MESSAGE_SIZE, stdin);
+    message[strcspn(message, "\n")] = 0;
+
+    printf("Enter the CRC polynomial (binary string): ");
+    fgets(polynomial, MAX_POLY_SIZE, stdin);
+    polynomial[strcspn(polynomial, "\n")] = 0;
+
+    int message_len = strlen(message);
+    int poly_len = strlen(polynomial);
+
+    printf("\nOriginal message: %s\n", message);
+    
+    append_crc(message, polynomial, message_len, poly_len);
+    
+    printf("Message with CRC appended: %s\n", message);
+
+    if (check_crc(message, polynomial, poly_len)) {
+        printf("CRC is valid. Message received correctly.\n");
+    } else {
+        printf("CRC is invalid. Message has errors.\n");
+    }
+
+    return 0;
 }
