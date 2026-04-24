@@ -1,8 +1,9 @@
 hello world
 hello spark
+hello scala 
 scala is powerful
 spark is fast
 hello scala spark
-word count example
-spark word count spark
-big data with spark
+example
+spark word spark
+with spark
